@@ -7,7 +7,7 @@
 *
 * Phaser - http://phaser.io
 *
-* v2.2.2 "Alkindar" - Built: Thu Feb 12 2015 13:27:14
+* v2.2.2 "Alkindar" - Built: Tue Feb 17 2015 01:15:24
 *
 * By Richard Davey http://www.photonstorm.com @photonstorm
 *
@@ -3151,14 +3151,12 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
     {
         if (PIXI.DEVKIT_NATIVE)
         {
-            // TODO actual implementation
-            //      If devkit gets around to implementing context.getImageData,
-            //      then there may not be a need for this if/else block.
-            properties = {
-                ascent: 0,
-                descent: 0,
-                fontSize: 42 // It's as good as anything else!
-            };
+            var Font = jsio('import ui.resource.Font');
+            var font = new Font(fontStyle);
+
+            // TODO properly get ascent and descent
+            properties.ascent = font.getSize();
+            properties.descent = 0;
         }
         else
         {
@@ -3246,10 +3244,11 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
             properties.descent = i - baseline;
             //TODO might need a tweak. kind of a temp fix!
             properties.descent += 6;
-            properties.fontSize = properties.ascent + properties.descent;
-
-            PIXI.Text.fontPropertiesCache[fontStyle] = properties;
         }
+
+        properties.fontSize = properties.ascent + properties.descent;
+
+        PIXI.Text.fontPropertiesCache[fontStyle] = properties;
     }
 
     return properties;
@@ -12358,7 +12357,7 @@ PIXI.AbstractFilter.prototype.apply = function(frameBuffer)
 *
 * Phaser - http://phaser.io
 *
-* v2.2.2 "Alkindar" - Built: Thu Feb 12 2015 13:27:14
+* v2.2.2 "Alkindar" - Built: Tue Feb 17 2015 01:15:24
 *
 * By Richard Davey http://www.photonstorm.com @photonstorm
 *
@@ -26455,7 +26454,6 @@ Phaser.Game.prototype = {
     */
     boot: function () {
 
-        console.log("~~~ BOOTING");
         if (this.isBooted)
         {
             return;
@@ -26595,7 +26593,6 @@ Phaser.Game.prototype = {
     setUpRenderer: function () {
 
         if (this.__canvas) {
-            console.log("~~~ ALL GOOD");
             this.canvas = this.__canvas;
             if (!this.device.canvas)
             {
