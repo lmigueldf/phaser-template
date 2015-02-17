@@ -58,9 +58,44 @@ if (!document.addEventListener) {
 }
 
 import .phaser;
-import .game;
 import .config;
 
+// For apply on 'new' keyword
+var construct = function(constructor, args) {
+    function F() {
+        return constructor.apply(this, args);
+    }
+    F.prototype = constructor.prototype;
+    return new F();
+}
+
+// Hook Phaser.Game
+var phaser_game = Phaser.Game;
+Phaser.Game = function() {
+    var width  = arguments[0] || 800;
+    var height = arguments[1] || 600;
+
+    // For now force a canvas backend
+    arguments[2] = Phaser.CANVAS;
+
+    var game = construct(phaser_game, arguments);
+
+    // Get the main canvas and add event listener to it
+    if (device.isMobileNative) {
+      GC.app.canvas = GC.app.engine.getCanvas();
+    } else {
+      var canvasView = GC.app.makeCanvasBackedView(width, height);
+      GC.app.canvas = canvasView.getCanvas();
+    }
+
+    addEventListenerAPI(GC.app.canvas);
+    GC.app.spoofMouseEvents(GC.app, GC.app.canvas);
+
+    game.setCanvas(GC.app.canvas);
+    return game;
+};
+
+// Import weeby?
 if (config.useWeeby) {
     jsio('import ' + (config.weebyModuleName || 'weeby'));
 }
@@ -69,23 +104,11 @@ exports = Class(GC.Application, function () {
 
     this.initUI = function () {
         this._gameLoaded = false;
-        this.game = null;
 
         // Leave the clearing to pixi
         this.engine.updateOpts({
             clearEachFrame: false
         });
-
-        // Get the main canvas and add event listener to it
-        if (device.isMobileNative) {
-          this._canvas = this.engine.getCanvas();
-        } else {
-          var _canvasView = this.makeCanvasBackedView(this.style.width, this.style.height);
-          this._canvas = _canvasView.getCanvas();
-        }
-
-        addEventListenerAPI(this._canvas);
-        this.spoofMouseEvents(this, this._canvas);
 
         GC.hidePreloader();
         if (config.useWeeby) {
@@ -93,7 +116,6 @@ exports = Class(GC.Application, function () {
         } else {
             this.startGame();
         }
-
     };
 
     this.spoofMouseEvents = function(view, canvas) {
@@ -124,8 +146,8 @@ exports = Class(GC.Application, function () {
         var Canvas = device.get('Canvas');
         var canvas = new Canvas({ width: width, height: height });
         var image = new Image({ srcImage: canvas});
-        // // var rootView = weeby.getGameView();
-        var rootView = this;
+        var rootView = this.getRootView();
+
         var iv = new View({
             image: image,
             width: rootView.style.width,
@@ -142,32 +164,22 @@ exports = Class(GC.Application, function () {
     };
 
     this.launchUI = function () {
-        console.log('in launchUI')
         // NOTE: Because of how devkit handles the canvas on native, the set
         // timeout is required so that there is 1 tick between creation and usage
         if (device.isMobileNative) {
-          setTimeout(function(){
-            // This starts the phaser boot sequence
-            document.publishEvent('DOMContentLoaded');
-          }.bind(this), 0);
+            setTimeout(function(){
+                // This starts the phaser boot sequence
+                document.publishEvent('DOMContentLoaded');
+            }.bind(this), 0);
         }
     };
 
     this.startGame = function() {
-        console.log('in startGame');
         if (!this._gameLoaded) {
             setTimeout(function() {
-                if (game.load) {
-                    this.game = game.load(this.style.width, this.style.height, this._canvas);
-                    logger.log('game loaded!');
-                } else {
-                    console.error("Game has no load function - how will the canvas be set?");
-                }
+                import .game;
             }.bind(this), 0);
             this._gameLoaded = true;
-        } else {
-            // Do we need this? (for weeby?)
-            game.resume();
         }
     };
 
