@@ -16,11 +16,7 @@ you may follow these helpful instructions!
 
     git clone https://github.com/weebygames/phaser-template
 
-2. Place your game code into the src/game.js file. Note that the intialization of
-   Phaser.Game is done inside the `exports = function(width, height, canvas) { ... }`.
-   As of right now, this is necessary. It is also necessary to call `game.setCanvas(canvas)`.
-   Note further that the width and height passed into this function are the width
-   and height are that of the device.
+2. Place your game code into the src/game.js file!
 
 Additional Notes
 ----------------
