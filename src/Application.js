@@ -59,9 +59,11 @@ if (!document.addEventListener) {
 
 import .phaser;
 import .game;
+import .config;
 
-var USE_WEEBY = false;
-if (USE_WEEBY) { jsio('import weeby'); }
+if (config.useWeeby) {
+    jsio('import ' + (config.weebyModuleName || 'weeby'));
+}
 
 exports = Class(GC.Application, function () {
 
@@ -86,7 +88,7 @@ exports = Class(GC.Application, function () {
         this.spoofMouseEvents(this, this._canvas);
 
         GC.hidePreloader();
-        if (USE_WEEBY) {
+        if (config.useWeeby) {
             weeby.on('StartGame', bind(this, 'startGame'));
         } else {
             this.startGame();
@@ -170,7 +172,7 @@ exports = Class(GC.Application, function () {
     };
 
     this.getRootView = function() {
-        return USE_WEEBY ? weeby.getGameView() : this.view;
+        return config.useWeeby ? weeby.getGameView() : this.view;
     };
 });
 
