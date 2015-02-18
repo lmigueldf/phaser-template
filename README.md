@@ -12,14 +12,21 @@ Instructions
 To integrate an existing Phaser game with Devkit through the use of this template,
 you may follow these helpful instructions!
 
-1. Clone this repository!
+1. Install [devkit](https://github.com/gameclosure/devkit).
+
+2. Clone this repository.
 
     git clone https://github.com/weebygames/phaser-template
 
-2. Place your game code into the src/game.js file!
+3. Place your game code into the src/game.js file!
+
+4. Build for a device using the devkit command, for example:
+
+    devkit debug native-android
+
+5. And of course, report issues you find!
 
 Additional Notes
 ----------------
 
 The phaser.js in this repo comes from [here](https://github.com/weebygames/phaser).
-
