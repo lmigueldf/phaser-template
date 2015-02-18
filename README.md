@@ -18,7 +18,7 @@ you may follow these helpful instructions!
 
         git clone https://github.com/weebygames/phaser-template
 
-3. Place your game code into the src/game.js file!
+3. Place your game code into `src/game.js` file!
 
 4. Build for a device using the devkit command, for example:
 
