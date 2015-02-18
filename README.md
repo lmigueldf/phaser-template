@@ -16,13 +16,13 @@ you may follow these helpful instructions!
 
 2. Clone this repository.
 
-    git clone https://github.com/weebygames/phaser-template
+        git clone https://github.com/weebygames/phaser-template
 
 3. Place your game code into the src/game.js file!
 
 4. Build for a device using the devkit command, for example:
 
-    devkit debug native-android
+        devkit debug native-android
 
 5. And of course, report issues you find!
 
