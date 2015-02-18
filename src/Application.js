@@ -157,7 +157,7 @@ exports = Class(GC.Application, function () {
             image: image,
             width: rootView.style.width,
             height: rootView.style.height,
-            parent: this
+            parent: this.getRootView()
         });
         iv.render = function(ctx) {
             image.render(ctx, 0, 0, width, height, 0, 0, this.style.width, this.style.height);
