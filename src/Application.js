@@ -53,10 +53,14 @@ var addEventListenerAPI = function(el) {
 if (!document.body) {
     document.body = {};
 }
+
 if (!document.addEventListener) {
     addEventListenerAPI(document);
 }
 
+document.documentElement = document.documentElement || {};
+
+// Load phaser and the confgi
 import .phaser;
 import .config;
 
@@ -184,9 +188,9 @@ exports = Class(GC.Application, function () {
 
     this.startGame = function() {
         if (!this._gameLoaded) {
-            setTimeout(function() {
+            Phaser.Device.whenReady(function() {
                 import .game;
-            }.bind(this), 0);
+            });
             this._gameLoaded = true;
         }
     };
@@ -213,52 +217,80 @@ exports = Class(GC.Application, function () {
         this.canvasView.style.top  = y;
     };
 
-    this.try_rescale = function() {
+    this.rescale = function() {
         if (this.canvas) {
             var scr = device.screen;
 
-            if (scr.width != this.last_width || scr.height != this.last_height) {
-                this.last_width = scr.width;
-                this.last_height = scr.height;
+            var game_width = this.game_width;
+            var game_height = this.game_height;
 
-                var game_width = this.game_width;
-                var game_height = this.game_height;
+            var xsize, ysize;
+            var xscale, yscale;
 
-                var xsize, ysize;
-                var xscale, yscale;
+            switch (config.fit) {
+            case 'scale':
+                this.scaleGame(scr.width, scr.height);
+                break;
 
-                switch (config.fit) {
-                case 'scale':
-                    this.scaleGame(scr.width, scr.height);
-                    break;
+            case 'max':
+                xsize = game_width;
+                ysize = game_height;
+                xscale = scr.width / xsize;
+                yscale = scr.height / ysize;
 
-                case 'max':
-                    xsize = game_width;
-                    ysize = game_height;
-                    xscale = scr.width / xsize;
-                    yscale = scr.height / ysize;
-
-                    if (xscale < yscale) {
-                        xsize *= xscale;
-                        ysize *= xscale;
-                    } else {
-                        xsize *= yscale;
-                        ysize *= yscale;
-                    }
-
-                    this.scaleGame(xsize, ysize);
-                    break;
-
-                default:
-                    console.error('Unrecognized value for config.fit');
+                if (xscale < yscale) {
+                    xsize *= xscale;
+                    ysize *= xscale;
+                } else {
+                    xsize *= yscale;
+                    ysize *= yscale;
                 }
+
+                this.scaleGame(xsize, ysize);
+                break;
+
+            case 'custom':
+                // TODO
+                break;
+
+            default:
+                console.error('Unrecognized value for config.fit');
             }
+        } else {
+            // Force resize again
+            this.last_width = -1;
         }
     };
 
+    this.onResize = function(width, height) {
+        var scr = device.screen;
+
+        if (scr.width != this.last_width || scr.height != this.last_height) {
+            this.last_width = scr.width;
+            this.last_height = scr.height;
+
+            // To tell phaser the screen size
+            document.innerWidth
+                = document.documentElement.clientWidth
+                = document.documentElement.offsetWidth
+                = document.documentElement.scrollWidth
+                = scr.width;
+
+            document.innerHeight
+                = document.documentElement.clientHeight
+                = document.documentElement.offsetHeight
+                = document.documentElement.scrollHeight
+                = scr.height;
+
+            console.log(document.innerHeight);
+
+            this.rescale();
+        }
+    }
+
     this.tick = function(dt) {
         // TODO this should probably be in an "on resize" function
-        this.try_rescale();
+        this.onResize();
     };
 });
 
