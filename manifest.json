@@ -1,7 +1,8 @@
 {
   "appID": "27d157b42fe04c7e993c98559a799c06",
   "dependencies": {
-    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.1.3"
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.1.3",
+    "devkit-phaser": "https://github.com/weebygames/devkit-phaser.git#0.1.0"
   },
   "shortName": "phasertemplate",
   "studio": {
